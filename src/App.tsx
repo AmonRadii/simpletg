@@ -1,12 +1,40 @@
 import type { Component } from 'solid-js';
 import { createEffect, createSignal, Show } from 'solid-js';
-import { TelegramClient } from "telegram";
+import { Api, TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions";
 import { Authorization } from './Authorization';
 
-const apiId = import.meta.env.VITE_TELEGRAM_API_ID;
-const apiHash = import.meta.env.VITE_TELEGRAM_API_HASH;
-const username = import.meta.env.VITE_USERNAME;
+const apiId = Number(import.meta.env.VITE_TELEGRAM_API_ID)
+const apiHash = String(import.meta.env.VITE_TELEGRAM_API_HASH)
+const username = String(import.meta.env.VITE_USERNAME);
+
+interface Message {
+  id: number;
+  peerId: Api.TypePeer;
+  date: number;
+  text: MessageText;
+  editDate?: number;
+}
+
+interface Dialog {
+  name: string;
+  peerId: Api.TypePeer;
+  unreadCount: number;
+  totalCount: number;
+  topMessageId: number;
+  lastSeenMessageId?: number;
+}
+
+interface TextElement {
+  text: string;
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+  url?: string;
+}
+
+type MessageText = TextElement[];
+
 
 const App: Component = () => {
   const [connectionStatus, setConnectionStatus] = createSignal<boolean | null>(null);
@@ -27,10 +55,22 @@ const App: Component = () => {
     })
   }
 
+  // important fields: 
+  // id: number
+  // - peerId 
+  // - date: number;
+  // message: string;
+  // entities?: Api.TypeMessageEntity[];
+  // 
+
   createEffect(() => {
     if (connectionStatus() === true) {
+      client.getMe().then(result => console.log(result))
+
         client.getInputEntity(username).then(result => {
-        client.getMessages(result).then(r => console.log(r))
+          console.log(result)
+
+        client.getMessages(result).then(message => console.log(message))
       })
     }
   })
