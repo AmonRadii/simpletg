@@ -19,6 +19,13 @@
     "vite-plugin-solid": "^2.11.8"
   },
   "dependencies": {
+    "@livestore/adapter-web": "^0.3.1",
+    "@livestore/devtools-vite": "^0.3.1",
+    "@livestore/livestore": "^0.3.1",
+    "@livestore/peer-deps": "^0.3.1",
+    "@livestore/solid": "^0.3.1",
+    "@livestore/sync-cf": "^0.3.1",
+    "@livestore/wa-sqlite": "1.0.5-dev.2",
     "buffer": "^6.0.3",
     "solid-js": "^1.9.9",
     "telegram": "^2.26.22",

@@ -9,7 +9,7 @@ export default defineConfig({
       protocolImports: true,
     }),
   ],
-  
+  worker: { format: "es" },
   server: {
     port: 3000,
   },
