@@ -6,21 +6,25 @@ export const tables = {
     name: 'messages',
     columns: {
         id: State.SQLite.integer({ primaryKey: true }),
-        peerId: State.Sqlite.text(),
-        createdAt: State.Sqlite.integer(),
-        text: State.Sqlite.json(),
-        editedAt?: integer(),
-    }
-  })
-
-
-  todos: State.SQLite.table({
-    name: 'todos',
-    columns: {
-      id: State.SQLite.text({ primaryKey: true }),
-      text: State.SQLite.text({ default: '' }),
-      completed: State.SQLite.boolean({ default: false }),
-      deletedAt: State.SQLite.integer({ nullable: true, schema: Schema.DateFromNumber }),
+        peerId: State.SQLite.text(),
+        createdAt: State.SQLite.integer(),
+        text: State.SQLite.json(),
+        editedAt: State.SQLite.integer({ nullable: true}),
     },
-  })
+  }),
+
+  peers: State.SQLite.table({
+    name: 'peers',
+    columns: {
+      id: State.SQLite.integer({ primaryKey: true }),
+      name: State.SQLite.text(),
+      lastName: State.SQLite.text(),
+      username: State.SQLite.text(),
+      peerId: State.SQLite.text(),
+      unreadCount: State.SQLite.integer(),
+      totalCount: State.SQLite.integer(),
+      topMessageId: State.SQLite.integer(),
+      lastSeenMessageId: State.SQLite.integer({ nullable: true}),
+    },
+  }),
 }

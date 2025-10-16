@@ -15,9 +15,11 @@ interface Message {
   text: MessageText;
   editDate?: number;
 }
-
-interface Dialog {
+// Dialog only for now, but channels and groups will be included later 
+interface Peer {
   name: string;
+  lastName: string;
+  username: string;
   peerId: Api.TypePeer;
   unreadCount: number;
   totalCount: number;
