@@ -13,6 +13,10 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  optimizeDeps: {
+    // TODO remove once fixed https://github.com/vitejs/vite/issues/8427
+    exclude: ["@livestore/wa-sqlite"],
+  },
   build: {
     target: 'esnext',
   },

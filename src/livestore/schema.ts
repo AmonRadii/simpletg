@@ -1,6 +1,20 @@
 import { Events, makeSchema, Schema, SessionIdSymbol, State } from '@livestore/livestore'
+import { Store } from 'solid-js/store';
 import { message } from 'telegram/client';
 
+const TextElement = Schema.Struct({
+  text: Schema.String,
+  bold: Schema.Boolean,
+  italic: Schema.Boolean,
+  underline: Schema.Boolean,
+  url: Schema.optional(Schema.String)
+})
+
+export type TextElement = typeof TextElement.Type;
+
+const MessageText = Schema.Array(TextElement)
+
+export type MessageText = typeof MessageText.Type
 
 export const tables = {
   messages: State.SQLite.table({
@@ -12,7 +26,7 @@ export const tables = {
         messageId: State.SQLite.integer(),
         peerId: State.SQLite.text(),
         createdAt: State.SQLite.integer(),
-        messageText: State.SQLite.json(),
+        messageText: State.SQLite.json({ schema: MessageText }),
         editedAt: State.SQLite.integer({ nullable: true}),
     },
   }),
@@ -32,19 +46,7 @@ export const tables = {
   }),
 }
 
-const TextElement = Schema.Struct({
-  text: Schema.String,
-  bold: Schema.Boolean,
-  italic: Schema.Boolean,
-  underline: Schema.Boolean,
-  url: Schema.optional(Schema.String)
-})
 
-type TextElement = typeof TextElement.Type;
-
-const MessageText = Schema.Array(TextElement)
-
-type MessageText = typeof MessageText.Type
 
 export const events = {
   messageCreateRequest: Events.synced({
@@ -103,11 +105,22 @@ export const events = {
 }
 
 
+function queryMessageById(peerId: string, messageId: number) {
+  const id = `${peerId}/${messageId}`;
+
+  return tables.messages.select().where("id", "=", id ).first({fallback: () => undefined})
+}
+
 export const materializers = State.SQLite.materializers(events, {
   'v1.MessageCreateRequest': ({ messageId, messageText, createdAt, peerId }) => {
     return tables.messages.insert({ id: `${peerId}/${messageId}`, messageText, createdAt, peerId, messageId  })
   },
-  'v1.MessageCreated': ({ messageId, messageText, createdAt, peerId }) => {
+  'v1.MessageCreated': ({ messageId, messageText, createdAt, peerId }, ctx) => {
+    const message = ctx.query(queryMessageById(peerId, messageId))
+    if (message === undefined) {
+      return tables.messages.insert({ id: `${peerId}/${messageId}`, messageText, createdAt, peerId, messageId  })
+    }
+
     return tables.messages.update({ id: `${peerId}/${messageId}`, messageText, createdAt, peerId }).where({
       id: `${peerId}/${messageId}`   
     })
@@ -125,3 +138,7 @@ export const materializers = State.SQLite.materializers(events, {
     return tables.messages.delete().where({ id: `${peerId}/${messageId}` })
   },
 })
+
+const state = State.SQLite.makeState({ tables, materializers });
+
+export const schema = makeSchema({ events, state });
