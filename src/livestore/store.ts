@@ -5,14 +5,13 @@ import LiveStoreWorker from "./livestore.worker?worker";
 
 import { schema } from "./schema";
 import { Store } from "@livestore/livestore";
-import { Accessor } from "solid-js";
+import { Accessor, createSignal } from "solid-js";
 
-const adapterFactory = makePersistedAdapter({
+export const adapterFactory = makePersistedAdapter({
   storage: { type: "opfs" },
   worker: LiveStoreWorker,
   sharedWorker: LiveStoreSharedWorker,
 });
-
 
 export const store: Accessor<Store<typeof schema> | undefined> = await getStore<
   typeof schema
@@ -21,3 +20,5 @@ export const store: Accessor<Store<typeof schema> | undefined> = await getStore<
   schema,
   storeId: "default",
 });
+
+console.log("Reached");
