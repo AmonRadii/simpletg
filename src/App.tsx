@@ -91,13 +91,19 @@ const App: Component = () => {
 
   store()?.subscribe(queryDb(tables.messages.select()), {
     onUpdate: (newMessages) => {
-      const mappedMessages: Message[] = newMessages.map(msg => ({
+      const mappedMessages: Message[] = [];
+      newMessages.forEach((msg, i) => {
+        const lastElementIndex = mappedMessages.length - 1;
+        const newIndex = lastElementIndex - i;
+
+        mappedMessages[newIndex] ={
         id: msg.messageId,
         peerId: msg.peerId,
         date: msg.createdAt,
         text: [...msg.messageText],
         editDate: msg.editedAt
-      }))
+      }
+      })
       setMessages(mappedMessages);
     }
   })
@@ -108,7 +114,6 @@ const App: Component = () => {
     <Show when={storedSession == undefined}>
       <Authorization client={client} notifyConnectionStatus={setConnectionStatus}></Authorization>
     </Show>
-    shosy
     <For each={messages()}>
       {(message) => (
         <div style="border: 1px solid black; margin: 10px; padding: 10px;">
