@@ -6,6 +6,7 @@ import { Authorization } from './Authorization';
 import { store } from './livestore/store';
 import { events, MessageText, tables } from './livestore/schema';
 import { queryDb } from '@livestore/livestore';
+import { reconcile } from 'solid-js/store';
 
 const apiId = Number(import.meta.env.VITE_TELEGRAM_API_ID)
 const apiHash = String(import.meta.env.VITE_TELEGRAM_API_HASH)
@@ -93,7 +94,7 @@ const App: Component = () => {
     onUpdate: (newMessages) => {
       const mappedMessages: Message[] = [];
       newMessages.forEach((msg, i) => {
-        const lastElementIndex = mappedMessages.length - 1;
+        const lastElementIndex = newMessages.length - 1;
         const newIndex = lastElementIndex - i;
 
         mappedMessages[newIndex] ={
@@ -104,9 +105,13 @@ const App: Component = () => {
         editDate: msg.editedAt
       }
       })
-      setMessages(mappedMessages);
+
+      setMessages(reconcile(mappedMessages));
     }
   })
+
+
+  
 
   
 

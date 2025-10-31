@@ -20,5 +20,4 @@ export const store: Accessor<Store<typeof schema> | undefined> = await getStore<
   schema,
   storeId: "default",
 });
-
-console.log("Reached");
+console.log('reached')
